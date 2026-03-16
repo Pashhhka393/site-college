@@ -3,6 +3,7 @@ import Header from "./components/Header/Header";
 import Password from "./components/Password/Password";
 import PasswordValue from "./components/PasswordValue/PasswordValue";
 
+
 const evaluatePassword = (password) => {
   const length = password.length >= 8;
   const upper = /[A-Z]/.test(password);
@@ -52,6 +53,27 @@ const evaluatePassword = (password) => {
 function App() {
   const [password, setPassword] = useState("");
   const strength = evaluatePassword(password);
+
+  const downloadPassword = () => {
+    if (!password) {
+        alert("Сначала введите или сгенерируйте пароль!");
+        return;
+    }
+
+    const fileText = `Ваш надежный пароль: ${password}\nДата создания: ${new Date().toLocaleString()}`;
+    const blob = new Blob([fileText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'my_secure_password.txt'; 
+
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -104,6 +126,7 @@ function App() {
           timeText={strength.timeText}
         />
 
+       <div className="button-card">
         <button
           type="button"
           className="action-button"
@@ -111,6 +134,15 @@ function App() {
         >
           Сгенерировать надежный пароль
         </button>
+
+        <button 
+          onClick={downloadPassword}
+          type="button"
+          className="action-button-2"
+        >
+          Скачать пароль
+        </button>
+       </div>
       </div>
     </div>
   );
